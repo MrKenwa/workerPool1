@@ -1,8 +1,8 @@
-package workerPoolUC
+package worker_pool
 
 import "workerPool1/internal/entity"
 
-func (wp *WorkerPool) GetStatuses() map[string]entity.Status {
+func (wp *Service) GetStatuses() map[string]entity.Status {
 	res := make(map[string]entity.Status)
 	wp.mu.Lock()
 	defer wp.mu.Unlock()

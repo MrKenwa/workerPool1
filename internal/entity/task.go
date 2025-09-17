@@ -3,10 +3,10 @@ package entity
 type Status string
 
 const (
-	StatusQueued  = "queued"
-	StatusRunning = "running"
-	StatusDone    = "done"
-	StatusFailed  = "failed"
+	StatusQueued  Status = "queued"
+	StatusRunning Status = "running"
+	StatusDone    Status = "done"
+	StatusFailed  Status = "failed"
 )
 
 type Task struct {

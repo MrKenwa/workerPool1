@@ -3,17 +3,22 @@ package config
 import (
 	"os"
 	"strconv"
+	"time"
 )
 
 type Config struct {
-	Server struct {
-		Host string
-	}
-	Queue struct {
-		Workers     int
-		QueueSize   int
-		BaseBackoff int
-	}
+	ServerConfig ServerConfig
+	QueueConfig  QueueConfig
+}
+
+type ServerConfig struct {
+	Host string
+}
+
+type QueueConfig struct {
+	Workers     int
+	QueueSize   int
+	BaseBackoff time.Duration
 }
 
 const (
@@ -26,14 +31,10 @@ func Load() *Config {
 	workers := getEnvInt("WORKERS", defaultWorkersCount)
 	qsize := getEnvInt("QUEUE_SIZE", defaultQueueSize)
 	return &Config{
-		Server: struct{ Host string }{
+		ServerConfig: ServerConfig{
 			Host: serverHost,
 		},
-		Queue: struct {
-			Workers     int
-			QueueSize   int
-			BaseBackoff int
-		}{
+		QueueConfig: QueueConfig{
 			Workers:     workers,
 			QueueSize:   qsize,
 			BaseBackoff: 100,

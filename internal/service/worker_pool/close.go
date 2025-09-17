@@ -1,12 +1,16 @@
-package workerPoolUC
+package worker_pool
 
 import "errors"
 
-func (wp *WorkerPool) Close() error {
+var (
+	ErrWorkerPoolAlreadyClosed = errors.New("worker pool is already closed")
+)
+
+func (wp *Service) Close() error {
 	// Локаем мьютекс чтобы атомарно закрыть канал и установить флаг
 	wp.mu.Lock()
 	if wp.isClosed {
-		return errors.New("worker pool is already closed")
+		return ErrWorkerPoolAlreadyClosed
 	}
 
 	// Отмечаем очередь закрытой и закрываем канал тасок

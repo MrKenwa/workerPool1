@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"workerPool1/internal/api/workerPoolHandler"
+	workerPoolHandler "workerPool1/internal/api/worker_pool"
 	"workerPool1/internal/config"
-	"workerPool1/internal/usecase/workerPoolUC"
+	workerPoolService "workerPool1/internal/service/worker_pool"
 )
 
 type Server struct {
@@ -23,7 +23,7 @@ func New(cfg *config.Config) *Server {
 	mux := &http.ServeMux{}
 	return &Server{
 		srv: &http.Server{
-			Addr:    cfg.Server.Host,
+			Addr:    cfg.ServerConfig.Host,
 			Handler: mux,
 		},
 		mux: mux,
@@ -32,7 +32,7 @@ func New(cfg *config.Config) *Server {
 }
 
 func (s *Server) Start() error {
-	workerPool, err := workerPoolUC.NewWorkerPool(s.cfg)
+	workerPool, err := workerPoolService.New(&s.cfg.QueueConfig)
 	if err != nil {
 		log.Printf("error while creating worker pool: %v", err)
 		return err
@@ -48,7 +48,7 @@ func (s *Server) Start() error {
 	})
 
 	go func() {
-		log.Printf("Server started on %s", s.cfg.Server.Host)
+		log.Printf("Server started on %s", s.cfg.ServerConfig.Host)
 		if err := s.srv.ListenAndServe(); err != nil {
 			log.Printf("Listen error: %v", err)
 		}
