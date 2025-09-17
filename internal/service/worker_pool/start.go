@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
 	"workerPool1/internal/entity"
 )
 
