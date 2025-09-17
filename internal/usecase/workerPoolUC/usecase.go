@@ -3,6 +3,7 @@ package workerPoolUC
 import (
 	"errors"
 	"sync"
+
 	"workerPool1/internal/config"
 	"workerPool1/internal/entity"
 )

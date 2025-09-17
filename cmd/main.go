@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+
 	"workerPool1/internal/config"
 	"workerPool1/internal/server"
 )

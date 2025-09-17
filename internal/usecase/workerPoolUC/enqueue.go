@@ -2,6 +2,7 @@ package workerPoolUC
 
 import (
 	"errors"
+
 	"workerPool1/internal/entity"
 )
 
