@@ -17,9 +17,9 @@ type Service struct {
 	cfg      *config.QueueConfig
 	mu       sync.Mutex
 	statuses map[string]entity.Status
-	isClosed bool
 	taskCh   chan entity.Task
 	doneCh   chan struct{}
+	isClosed bool
 }
 
 func New(cfg *config.QueueConfig) (*Service, error) {
