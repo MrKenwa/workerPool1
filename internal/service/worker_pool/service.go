@@ -6,6 +6,7 @@ import (
 
 	"workerPool1/internal/config"
 	"workerPool1/internal/entity"
+	"workerPool1/internal/logger"
 )
 
 var (
@@ -15,6 +16,7 @@ var (
 
 type Service struct {
 	cfg      *config.QueueConfig
+	log      *logger.Logger
 	mu       sync.Mutex
 	statuses map[string]entity.Status
 	taskCh   chan entity.Task
@@ -22,7 +24,7 @@ type Service struct {
 	isClosed bool
 }
 
-func New(cfg *config.QueueConfig) (*Service, error) {
+func New(cfg *config.QueueConfig, log *logger.Logger) (*Service, error) {
 	if cfg.Workers <= 0 {
 		return nil, ErrWorkersCountBelowZero
 	}
@@ -33,6 +35,7 @@ func New(cfg *config.QueueConfig) (*Service, error) {
 
 	return &Service{
 		cfg:      cfg,
+		log:      log,
 		mu:       sync.Mutex{},
 		statuses: make(map[string]entity.Status),
 		isClosed: false,

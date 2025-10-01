@@ -20,6 +20,7 @@ type EnqueueRequest struct {
 
 func (h *Handler) Enqueue(w http.ResponseWriter, r *http.Request) {
 	var req EnqueueRequest
+	h.log.Infof("got request: %v", r)
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSONError(w, err, http.StatusBadRequest)
 		return

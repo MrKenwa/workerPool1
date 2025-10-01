@@ -2,7 +2,6 @@ package worker_pool
 
 import (
 	"errors"
-	"log"
 	"math"
 	"math/rand"
 	"sync"
@@ -32,7 +31,7 @@ func (wp *Service) Start() {
 
 func (wp *Service) startWorker() {
 	for task := range wp.taskCh {
-		log.Printf("Start processing task %s", task.ID)
+		//log.Printf("Start processing task %s", task.ID)
 		attempt := 0
 		for ; attempt <= task.MaxRetries; attempt++ { // <= чтобы была минимум одна попытка
 			err := wp.processTask(task)
@@ -47,10 +46,10 @@ func (wp *Service) startWorker() {
 			}
 
 			jitter := time.Duration(rand.Int63n(int64(backoff)))
-			log.Printf("Error in process task %s, sleep %v", task.ID, backoff+jitter)
+			//log.Printf("Error in process task %s, sleep %v", task.ID, backoff+jitter)
 			time.Sleep(backoff + jitter)
 		}
-		log.Printf("Task %s was processed successful after %d attempts", task.ID, attempt)
+		//log.Printf("Task %s was processed successful after %d attempts", task.ID, attempt)
 	}
 }
 

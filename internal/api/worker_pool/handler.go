@@ -2,15 +2,19 @@ package worker_pool
 
 import (
 	"net/http"
+
+	"workerPool1/internal/logger"
 )
 
 type Handler struct {
 	service service
+	log     *logger.Logger
 }
 
-func New(service service) *Handler {
+func New(service service, log *logger.Logger) *Handler {
 	return &Handler{
 		service: service,
+		log:     log,
 	}
 }
 

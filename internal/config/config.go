@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Environment  string
 	ServerConfig ServerConfig
 	QueueConfig  QueueConfig
 }
@@ -27,10 +28,17 @@ const (
 )
 
 func Load() *Config {
-	serverHost := os.Getenv("SERVER_HOST")
+	serverHost := func() string {
+		res := os.Getenv("SERVER_HOST")
+		if res != "" {
+			return res
+		}
+		return "localhost:8080"
+	}()
 	workers := getEnvInt("WORKERS", defaultWorkersCount)
 	qsize := getEnvInt("QUEUE_SIZE", defaultQueueSize)
 	return &Config{
+		Environment: os.Getenv("ENVIRONMENT"),
 		ServerConfig: ServerConfig{
 			Host: serverHost,
 		},
