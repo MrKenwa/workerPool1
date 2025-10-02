@@ -7,19 +7,19 @@ import (
 )
 
 type Config struct {
-	Environment  string
+	Environment  string `envconfig:"ENVIRONMENT"`
 	ServerConfig ServerConfig
 	QueueConfig  QueueConfig
 }
 
 type ServerConfig struct {
-	Host string
+	Host string `envconfig:"HOST"`
 }
 
 type QueueConfig struct {
-	Workers     int
-	QueueSize   int
-	BaseBackoff time.Duration
+	Workers     int           `envconfig:"WORKERS"`
+	QueueSize   int           `envconfig:"QUEUE_SIZE"`
+	BaseBackoff time.Duration `envconfig:"BASE_BACKOFF"`
 }
 
 const (
@@ -33,7 +33,7 @@ func Load() *Config {
 		if res != "" {
 			return res
 		}
-		return "localhost:8080"
+		return "0.0.0.0:8080"
 	}()
 	workers := getEnvInt("WORKERS", defaultWorkersCount)
 	qsize := getEnvInt("QUEUE_SIZE", defaultQueueSize)
@@ -48,6 +48,20 @@ func Load() *Config {
 			BaseBackoff: 100,
 		},
 	}
+
+	//var cfg Config
+	//
+	//local := time.FixedZone("MSK", 3*60*60)
+	//time.Local = local
+	//
+	//if err := envconfig.Process("", &cfg); err != nil {
+	//	panic(err)
+	//}
+	//if cfg.ServerConfig.Host == "" {
+	//	panic(errors.New("cfg is required"))
+	//}
+	//
+	//return &cfg
 }
 
 func getEnvInt(key string, def int) int {

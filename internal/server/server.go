@@ -14,7 +14,6 @@ import (
 	"go.uber.org/zap"
 	workerPoolHandler "workerPool1/internal/api/worker_pool"
 	"workerPool1/internal/config"
-	"workerPool1/internal/entity"
 	"workerPool1/internal/logger"
 	workerPoolService "workerPool1/internal/service/worker_pool"
 )
@@ -40,6 +39,9 @@ func New(cfg *config.Config, log *logger.Logger) *Server {
 }
 
 func (s *Server) Start() error {
+	// Оборачиваем mux в middleware
+	s.srv.Handler = s.loggingMiddleware(s.mux)
+
 	workerPool, err := workerPoolService.New(&s.cfg.QueueConfig, s.log)
 	if err != nil {
 		s.log.Errorf("error while creating worker pool: %v", err)
@@ -105,19 +107,6 @@ func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 		s.log.Info(string(body))
 		// важно: восстанавливаем тело, иначе хендлер не увидит его
 		r.Body = io.NopCloser(strings.NewReader(string(body)))
-
-		// CORS
-		originHeader := strings.ToLower(r.Header.Get("Origin"))
-		if s.cfg.Environment != entity.ProdEnvName &&
-			(originHeader == "http://localhost:3000" || originHeader == "" || originHeader == "https://localhost:3000") {
-			w.Header().Set("Access-Control-Allow-Origin", originHeader)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		w.Header().Set("Access-Control-Allow-Origin", originHeader)
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		next.ServeHTTP(w, r)
 	})

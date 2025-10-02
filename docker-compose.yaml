@@ -4,6 +4,8 @@ services:
     container_name: promtail
     ports:
       - "9080:9080"
+    networks:
+      - wp-network
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -16,6 +18,8 @@ services:
     container_name: loki
     ports:
       - "3100:3100"
+    networks:
+      - wp-network
     volumes:
       - ./confs/loki-config.yaml:/etc/loki/local-config.yaml
 
@@ -24,6 +28,8 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+    networks:
+      - wp-network
     depends_on:
       - loki
     environment:
@@ -34,10 +40,14 @@ services:
       - grafanadata:/var/lib/grafana
 
   backend:
-    build: ./backend
+    build: .
+    env_file:
+      - .env
     container_name: backend
     ports:
       - "8080:8080"
+    networks:
+      - wp-network
     logging:
       driver: json-file
       options:
@@ -45,3 +55,7 @@ services:
 
 volumes:
   grafanadata:
+
+networks:
+  wp-network:
+    driver: bridge

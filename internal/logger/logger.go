@@ -2,6 +2,7 @@ package logger
 
 import (
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"workerPool1/internal/entity"
 )
 
@@ -12,16 +13,29 @@ type Logger struct {
 func New(environment string) (*Logger, error) {
 	var l *zap.Logger
 	var err error
-	var cfg zap.Config
-
-	if environment == entity.ProdEnvName {
-		cfg = zap.NewProductionConfig()
-	} else {
-		cfg = zap.NewDevelopmentConfig()
+	var cfg = zap.Config{
+		OutputPaths:      []string{"stdout"},
+		ErrorOutputPaths: []string{"stderr"},
+		Encoding:         "json",
+		EncoderConfig: zapcore.EncoderConfig{
+			TimeKey:      "ts",
+			LevelKey:     "level",
+			MessageKey:   "msg",
+			CallerKey:    "caller",
+			EncodeTime:   zapcore.ISO8601TimeEncoder,
+			EncodeLevel:  zapcore.CapitalLevelEncoder,
+			EncodeCaller: zapcore.ShortCallerEncoder,
+		},
 	}
 
-	cfg.OutputPaths = []string{"stdout"}
-	cfg.ErrorOutputPaths = []string{"stderr"}
+	if environment == entity.ProdEnvName {
+		cfg.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
+		cfg.Development = false
+	} else {
+		cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
+		cfg.Development = true
+	}
+
 	l, err = cfg.Build(zap.AddCaller(), zap.AddCallerSkip(1))
 	if err != nil {
 		return nil, err
